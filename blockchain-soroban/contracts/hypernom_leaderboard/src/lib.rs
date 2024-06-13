@@ -97,7 +97,22 @@ impl HypernomLeaderboardContract {
             player_id: player_id.clone(),
             scores: Vec::from_array(&env, [0i64; 6]), // Initialize with 0 scores for each level
         });
-        scores.scores.set(level, score);
+        match scores.scores.get(level) {
+            Some(old_score) => {
+                // Only update the score if it is better than the current score,
+                // or if the old_score is still the initial 0.
+                // A real game can't have a time score of 0 ms, so this is a
+                // safe initial value.
+                if old_score == 0 || score <= old_score {
+                    scores.scores.set(level, score);
+                }
+                else {
+                    log!(&env, "Score {} is not better than the current score {} for level {}.", score, scores.scores.get(level), level);
+                }
+            },
+            None => { }
+        }
+
         env.storage().persistent().set(&DataKey::Scores(player_id), &scores);
     }
 }
