@@ -133,7 +133,7 @@ impl HypernomLeaderboardContract {
             // log!(&env, "Try leaderboard.insert({}, {}, {?:})", leaderboard.len() +1, player_name.clone(), scores.scores.get(level).unwrap_or(0));
             // TODO: Implement binary_sort()
             let insert_index = leaderboard.binary_search((scores.scores.get(level).unwrap_or(0), player_id.clone(), player_name.clone()));
-            let mut idx = 0;
+            let mut idx;
             match insert_index {
                 Ok(index) => {
                     log!(&env, "Player {} already exists in the leaderboard at index: {}", player_name, index);
