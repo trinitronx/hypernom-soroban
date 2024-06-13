@@ -114,6 +114,28 @@ impl HypernomLeaderboardContract {
 
         env.storage().persistent().set(&DataKey::Scores(player_id), &scores);
     }
+
+    /// Get the leaderboard for a specific level.
+    pub fn get_leaderboard(env: Env, level: u32) -> Vec<(Address, String, i64)> {
+        let players: Map<Address, String> = env.storage().persistent().get(&DataKey::Players).unwrap_or(Map::new(&env));
+        let mut leaderboard = Vec::new(&env);
+        for (player_id, player_name) in players.iter() {
+            let scores = Self::get_scores(env.clone(), player_id.clone()).unwrap_or(Scores {
+                player_id: player_id.clone(),
+                scores: Vec::from_array(&env, [0i64; 6]), // Initialize with 0 scores for each level
+            });
+            // env.storage().persistent().get(&DataKey::Scores(player_id.clone())).unwrap_or(Scores {
+            //     player_id: player_id.clone(),
+            //     scores: Vec::from_array(&env, [0i64; 6]), // Initialize with 0 scores for each level
+            // });
+            log!(&env, "Leaderboard length is now: {}", leaderboard.len());
+            log!(&env, "Try leaderboard.insert({}, {}, {?:})", leaderboard.len() +1, player_name.clone(), scores.scores.get(level).unwrap_or(0));
+            // TODO: Implement binary_sort()
+            leaderboard.insert(leaderboard.len(), (player_id.clone(), player_name.clone(), scores.scores.get(level).unwrap_or(0)));
+        }
+        // leaderboard.sort_by(|a, b| a.1.cmp(&b.1));
+        leaderboard
+    }
 }
 
 mod test;
