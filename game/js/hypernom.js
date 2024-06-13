@@ -1,3 +1,4 @@
+const DEBUG = true; // set to false to disable console logs
 var camera, scene, overlayScene, renderer, mesh, effect, controls,
   levelTexture, levelMesh, scoreTexture, scoreMesh, introMesh,
   _5cellButton, _8cellButton, _16cellButton, _24cellButton, _120cellButton, _600cellButton, _stereoButton, _pauseButton,
@@ -383,9 +384,14 @@ function animate() {
       timing.end[level] = Date.now();
       winNoise.play();
       gamePoints = 0;
+      var finalScore = Math.round((timing.end[level] - timing.start[level]) / 100) / 10; // in seconds
+      if (DEBUG) {
+        console.log("Level " + level + " completed in " + finalScore + " seconds");
+      }
       levelTexture.clear()
         .drawText("Level Score: ", undefined, 200, "#E59400", "normal 100px Helvetica")
-        .drawText(Math.round((timing.end[level] - timing.start[level])/100)/10 + " seconds", undefined, 300, "#E59400", "normal 100px Helvetica");
+        .drawText(finalScore + " seconds", undefined, 300, "#E59400", "normal 100px Helvetica");
+      // TODO: Add wallet login + leaderboard screen here
       camera.add(levelMesh);
       camera.remove(scoreMesh);
       for(i; i < numCells; i++) {
