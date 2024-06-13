@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contracttype, contractimpl, contracterror, Env, Address, String, Vec, Map, log};
+use soroban_sdk::{contract, contracttype, contractimpl, contracterror, Env, Address, String, Vec, vec, Map, log};
 
 // Unused: symbol_short, vec, Symbol
 
@@ -79,19 +79,27 @@ impl HypernomLeaderboardContract {
 
     /* TODO: Implement players array, scores, leaderboard sort, etc... */
     pub fn get_list(env: Env) -> Map<Address, String> {
-        todo!("Implement get_list");
+        // todo!("Implement get_list");
         env.storage().persistent().get(&DataKey::Players)
         .unwrap_or(Map::new(&env))
     }
     pub fn get_player(env: Env, player_id: Address) -> Option<String> {
         todo!("Implement get_player");
-        env.storage().persistent().get(&DataKey::PlayerId(player_id))
+        // env.storage().persistent().get(&DataKey::PlayerId(player_id))
     }
     pub fn get_scores(env: Env, player_id: Address) -> Option<Scores> {
         todo!("Implement get_scores");
-        env.storage().persistent().get(&DataKey::Scores(player_id))
+        // env.storage().persistent().get(&DataKey::Scores(player_id))
     }
-
+    pub fn add_score(env: Env, player_id: Address, level: u32, score: i64) {
+        // todo!("Implement set_scores");
+        let mut scores = env.storage().persistent().get(&DataKey::Scores(player_id.clone())).unwrap_or(Scores {
+            player_id: player_id.clone(),
+            scores: Vec::from_array(&env, [0i64; 6]), // Initialize with 0 scores for each level
+        });
+        scores.scores.set(level, score);
+        env.storage().persistent().set(&DataKey::Scores(player_id), &scores);
+    }
 }
 
 mod test;
