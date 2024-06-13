@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contracttype, contractimpl, contracterror, Env, Address, String, Vec, vec, Map, log};
+use soroban_sdk::{contract, contracttype, contractimpl, contracterror, Env, Address, String, Vec, Map, log};
 
 // Unused: symbol_short, vec, Symbol
 
@@ -83,10 +83,10 @@ impl HypernomLeaderboardContract {
         env.storage().persistent().get(&DataKey::Players)
         .unwrap_or(Map::new(&env))
     }
-    pub fn get_player(env: Env, player_id: Address) -> Option<String> {
-        todo!("Implement get_player");
-        // env.storage().persistent().get(&DataKey::PlayerId(player_id))
-    }
+    // pub fn get_player(env: Env, player_id: Address) -> Option<String> {
+    //     todo!("Implement get_player");
+    //     // env.storage().persistent().get(&DataKey::PlayerId(player_id))
+    // }
     pub fn get_scores(env: Env, player_id: Address) -> Option<Scores> {
         env.storage().persistent().get(&DataKey::Scores(player_id)).unwrap_or(None)
     }
@@ -116,7 +116,8 @@ impl HypernomLeaderboardContract {
     }
 
     /// Get the leaderboard for a specific level.
-    pub fn get_leaderboard(env: Env, level: u32) -> Vec<(Address, String, i64)> {
+    // pub fn get_leaderboard(env: Env, level: u32) -> Vec<(Address, String, i64)> {
+    pub fn get_leaderboard(env: Env, level: u32) -> Vec<(i64, Address, String)> {
         let players: Map<Address, String> = env.storage().persistent().get(&DataKey::Players).unwrap_or(Map::new(&env));
         let mut leaderboard = Vec::new(&env);
         for (player_id, player_name) in players.iter() {
@@ -129,9 +130,24 @@ impl HypernomLeaderboardContract {
             //     scores: Vec::from_array(&env, [0i64; 6]), // Initialize with 0 scores for each level
             // });
             log!(&env, "Leaderboard length is now: {}", leaderboard.len());
-            log!(&env, "Try leaderboard.insert({}, {}, {?:})", leaderboard.len() +1, player_name.clone(), scores.scores.get(level).unwrap_or(0));
+            // log!(&env, "Try leaderboard.insert({}, {}, {?:})", leaderboard.len() +1, player_name.clone(), scores.scores.get(level).unwrap_or(0));
             // TODO: Implement binary_sort()
-            leaderboard.insert(leaderboard.len(), (player_id.clone(), player_name.clone(), scores.scores.get(level).unwrap_or(0)));
+            let insert_index = leaderboard.binary_search((scores.scores.get(level).unwrap_or(0), player_id.clone(), player_name.clone()));
+            let mut idx = 0;
+            match insert_index {
+                Ok(index) => {
+                    log!(&env, "Player {} already exists in the leaderboard at index: {}", player_name, index);
+                    idx = index;
+                },
+                Err(index) => {
+                    log!(&env, "Inserting at index: {?:}", index);
+                    idx = index;
+                }
+            }
+            // leaderboard.insert(idx, (player_id.clone(), player_name.clone(), scores.scores.get(level).unwrap_or(0)));
+            leaderboard.insert(idx, (scores.scores.get(level).unwrap_or(0), player_id.clone(), player_name.clone()));
+
+            // leaderboard.insert(leaderboard.len(), (player_id.clone(), player_name.clone(), scores.scores.get(level).unwrap_or(0)));
         }
         // leaderboard.sort_by(|a, b| a.1.cmp(&b.1));
         leaderboard
