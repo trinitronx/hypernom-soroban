@@ -387,9 +387,12 @@ function animate() {
       var finalScore = Math.round((timing.end[level] - timing.start[level]) / 100) / 10; // in seconds
       if (DEBUG) {
         console.log("Level " + level + " completed in " + finalScore + " seconds");
+        for (level_i = 0; level_i < polychora.length; level_i++) {
+          console.log("Level " + level_i + " took " + Math.round((timing.end[level_i] - timing.start[level_i]) / 100) / 10 + " seconds");
+        }
       }
       levelTexture.clear()
-        .drawText("Level Score: ", undefined, 200, "#E59400", "normal 100px Helvetica")
+        .drawText("Level " + level + " Score: ", undefined, 200, "#E59400", "normal 100px Helvetica")
         .drawText(finalScore + " seconds", undefined, 300, "#E59400", "normal 100px Helvetica");
       // TODO: Add wallet login + leaderboard screen here
       camera.add(levelMesh);
