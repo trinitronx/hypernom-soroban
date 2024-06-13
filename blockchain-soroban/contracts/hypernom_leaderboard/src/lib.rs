@@ -34,6 +34,7 @@ pub enum DataKey {
 ///
 /// Stores the player's wallet address and a list of scores for each level.
 #[contracttype]
+#[derive(Debug)]
 pub struct Scores {
     player_id: Address,
     scores: Vec<i64>, // Unix timestamps (in ms) for each game level
@@ -88,8 +89,7 @@ impl HypernomLeaderboardContract {
         // env.storage().persistent().get(&DataKey::PlayerId(player_id))
     }
     pub fn get_scores(env: Env, player_id: Address) -> Option<Scores> {
-        todo!("Implement get_scores");
-        // env.storage().persistent().get(&DataKey::Scores(player_id))
+        env.storage().persistent().get(&DataKey::Scores(player_id)).unwrap_or(None)
     }
     pub fn add_score(env: Env, player_id: Address, level: u32, score: i64) {
         // todo!("Implement set_scores");
