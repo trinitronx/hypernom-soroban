@@ -80,7 +80,6 @@ impl HypernomLeaderboardContract {
 
     /* TODO: Implement players array, scores, leaderboard sort, etc... */
     pub fn get_list(env: Env) -> Map<Address, String> {
-        // todo!("Implement get_list");
         env.storage().persistent().get(&DataKey::Players)
         .unwrap_or(Map::new(&env))
     }
