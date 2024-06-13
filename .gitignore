@@ -1,0 +1,10 @@
+# Node.js / NPM
+node_modules
+*/node_modules
+# Rust's output directory
+target
+
+# Local Soroban settings
+.soroban
+# Wallet seed_phrase / Secret Keys
+.soroban/identity
